@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FS Horizon Radar</title>
+  <style>
+    :root { --bg:#0f1722; --surface:#172131; --surface2:#1d2a3d; --border:rgba(255,255,255,.08); --text:#edf2f7; --muted:#9fb0c3; --teal:#69d5c2; --green:#86d8a5; --amber:#f3c057; --red:#ef8a8a; }
+    *{box-sizing:border-box} body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--text)}
+    .page{min-height:100vh;display:grid;grid-template-columns:260px 1fr}.sidebar{padding:24px;background:var(--surface);border-right:1px solid var(--border)}
+    .brand{display:flex;gap:12px;align-items:center;margin-bottom:24px}.logo{width:40px;height:40px;border-radius:12px;border:2px solid var(--teal);display:grid;place-items:center;color:var(--teal);font-weight:700}.brand span{display:block;color:var(--muted);font-size:13px}
+    .nav a{display:block;padding:12px 14px;border-radius:12px;color:var(--muted);text-decoration:none}.nav a.active{background:rgba(105,213,194,.12);color:var(--text)}
+    .content{padding:24px;display:grid;gap:20px}.card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:20px}
+    .eyebrow{color:var(--teal);text-transform:uppercase;letter-spacing:.08em;font-size:12px}.hero h1{margin:8px 0 10px;font-size:40px;max-width:12ch}.lede{color:var(--muted);max-width:72ch}
+    .themes,.meta{display:flex;gap:10px;flex-wrap:wrap}.chip{border:1px solid var(--border);border-radius:999px;padding:8px 12px;color:var(--muted)}
+    .issue{display:grid;gap:14px}.issue-top{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}.issue p,.small{color:var(--muted)}
+    .badge{padding:8px 10px;border-radius:999px;white-space:nowrap;font-size:12px}.high{background:rgba(134,216,165,.15);color:var(--green)}.medium{background:rgba(243,192,87,.15);color:var(--amber)}.watch{background:rgba(239,138,138,.15);color:var(--red)}
+    .sowhat{padding:14px;border-radius:16px;background:var(--surface2)} .status{padding:14px;border-radius:16px;background:rgba(105,213,194,.08);border:1px solid rgba(105,213,194,.2)}
+    .feedback{display:flex;gap:10px}.feedback button{padding:10px 14px;border-radius:12px;border:1px solid var(--border);background:transparent;color:var(--text)}
+    .hidden{display:none}@media (max-width:900px){.page{grid-template-columns:1fr}.hero h1{font-size:32px}}
+  </style>
+</head>
+<body>
+  <main class="page">
+    <aside class="sidebar">
+      <div class="brand"><div class="logo">H</div><div><strong>Horizon Radar</strong><span>Financial services scanning</span></div></div>
+      <nav class="nav"><a href="#" class="active">Overview</a><a href="#">Themes</a><a href="#">Credibility</a><a href="#">Feedback</a></nav>
+    </aside>
+    <section class="content">
+      <div class="hero card">
+        <p class="eyebrow">General financial services radar</p>
+        <h1>See the issues emerging across financial services.</h1>
+        <p class="lede">A UK-first horizon-scanning dashboard for emerging risks, structural trends and modern cross-cutting challenges.</p>
+        <div id="themes" class="themes"></div>
+      </div>
+      <div id="apiStatus" class="status hidden"></div>
+      <section class="card"><h2>Top emerging issues</h2><p class="small">Every issue includes a visible so what section.</p></section>
+      <div id="issues"></div>
+    </section>
+  </main>
+  <script>
+    const API_BASE = 'PASTE_RAILWAY_URL_HERE';
+    const fallbackData = { themes:['Emerging risks','Horizon scanning','Geopolitics, national security & sanctions','Cyber, data & operational resilience','AI, digital assets & non-bank finance'], issues:[{id:'geo-natsec-1',title:'Geopolitical tension, national security and strategic dependency risks are rising',theme:'Geopolitics & national security',geography:'UK + global',credibility:'high',summary:'Signals point to a stronger overlap between financial stability, national security, sanctions exposure, cyber resilience and strategic dependency risk, especially where firms operate across sensitive jurisdictions, critical infrastructure or defence-adjacent sectors.',so_what:'This matters because geopolitical and national security shifts can quickly affect sanctions controls, transaction monitoring, third-party risk, cross-border exposures, client acceptance and the supervisory scrutiny applied to internationally active firms.'},{id:'cyber-res-1',title:'Cyber resilience and operational resilience are converging into a single supervisory concern',theme:'Cyber & resilience',geography:'UK',credibility:'high',summary:'There is a stronger pattern of focus on cyber readiness, implementation evidence, testing quality and dependency mapping, with geopolitical pressures making technology concentration and third-party reliance more material.',so_what:'This matters because resilience is becoming a judged capability rather than a policy statement, which raises the bar for boards, technology teams and firms that depend on complex data, cloud and third-party service chains.'},{id:'ai-digital-1',title:'AI adoption, digital assets and non-bank financial activity are creating newer cross-cutting risks',theme:'AI, digital assets & NBFI',geography:'UK + Europe',credibility:'medium',summary:'Signals suggest continued pressure around AI governance, digital asset controls, rapid innovation outside traditional banking, and the challenge of supervising activities that cut across prudential, conduct and operational risk boundaries.',so_what:'This matters because newer financial services risks do not sit neatly inside one policy box, so firms and regulators need a broader horizon-scanning view rather than relying only on traditional topics such as Basel, prudential standards or isolated rule changes.'}] };
+    function badgeClass(v){return v==='high'?'badge high':v==='medium'?'badge medium':'badge watch'}
+    function badgeText(v){return v==='high'?'High credibility':v==='medium'?'Medium credibility':'Watch'}
+    function render(data){document.getElementById('themes').innerHTML=data.themes.map(t=>`<span class="chip">${t}</span>`).join('');document.getElementById('issues').innerHTML=data.issues.map(issue=>`<article class="card issue"><div class="issue-top"><div><h3>${issue.title}</h3><p>${issue.summary}</p></div><span class="${badgeClass(issue.credibility)}">${badgeText(issue.credibility)}</span></div><div class="meta"><span class="chip">${issue.theme}</span><span class="chip">${issue.geography}</span></div><div class="sowhat"><strong>So what?</strong><p class="small">${issue.so_what}</p></div><div class="feedback"><button type="button">👍 Relevant</button><button type="button">👎 Not useful</button></div></article>`).join('')}
+    async function loadDashboard(){ if(!API_BASE || API_BASE==='PASTE_RAILWAY_URL_HERE'){ const s=document.getElementById('apiStatus'); s.classList.remove('hidden'); s.textContent='Using built-in demo data for now. Add your Railway URL into index.html later to pull live backend data.'; render(fallbackData); return; } try { const res=await fetch(`${API_BASE}/api/dashboard`); if(!res.ok) throw new Error('API request failed'); const data=await res.json(); render(data); } catch(err) { const s=document.getElementById('apiStatus'); s.classList.remove('hidden'); s.textContent='Live API could not be reached, so this page is showing safe fallback data instead.'; render(fallbackData); } }
+    loadDashboard();
+  </script>
+</body>
+</html>
