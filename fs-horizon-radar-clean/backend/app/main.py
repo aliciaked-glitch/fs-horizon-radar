@@ -17,6 +17,10 @@ class DashboardSummary(BaseModel):
     themes: List[str]
     issues: List[Issue]
 
+@app.get("/")
+async def root(): 
+    return {"message": "FS Horizon Radar backend is running"}
+
 @app.get("/health")
 async def root():
     return {"ok": True}
